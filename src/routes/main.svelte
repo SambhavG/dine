@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import * as Tabs from "$lib/components/ui/tabs";
   import * as Tooltip from "$lib/components/ui/tooltip";
+  import * as Popover from "$lib/components/ui/popover";
   import { Checkbox } from "$lib/components/ui/checkbox";
   import Separator from "$lib/components/ui/separator/separator.svelte";
   import { ToggleGroup } from "bits-ui";
@@ -9,6 +10,7 @@
   import { selectedMeal, filters } from "../stores.js";
   import Switch from "$lib/components/ui/switch/switch.svelte";
   import * as Table from "$lib/components/ui/table";
+  import { Info } from "lucide-svelte";
 
   //Query https://general-backend-db.onrender.com/polls
   let data = {};
@@ -25,6 +27,18 @@
     FlorenceMoore: "F",
     Lakeside: "L",
     Ricker: "R",
+  };
+
+  let dhallToName = {
+    Wilbur: "Wilbur",
+    Stern: "Stern",
+    GerhardCasper: "Casper",
+    EVGR: "EVGR",
+    Arrillaga: "Arrillaga",
+    Branner: "Branner",
+    FlorenceMoore: "Flomo",
+    Lakeside: "Lakeside",
+    Ricker: "Ricker",
   };
 
   async function getData() {
@@ -70,26 +84,6 @@
 
       mealFoods[meal] = foods;
     });
-
-    let randomFood = {
-      name: "Cereal",
-      dhalls: [
-        "Wilbur",
-        "Stern",
-        "GerhardCasper",
-        "EVGR",
-        "Arrillaga",
-        "Branner",
-        "FlorenceMoore",
-        "Lakeside",
-        "Ricker",
-      ],
-    };
-
-    for (let i = 0; i < 20; i++) {
-      randomFood.name = "Cereal" + i;
-      mealFoods["Breakfast"].push(JSON.parse(JSON.stringify(randomFood)));
-    }
   }
 
   function sortByDhFrequency() {
@@ -178,7 +172,6 @@
         }
       });
     });
-    console.log(allDhFoods);
   }
 
   function var_to_label(variable: string) {
@@ -197,9 +190,48 @@
 
   onMount(() => {
     getData();
+
+    //Set the current meal to the meal that will occur next based on the current time
+    let date = new Date();
+    let hour = date.getHours();
+    let minute = date.getMinutes();
+    let day = date.getDay();
+
+    let meal = "Lunch";
+    //If it's between 8PM Friday and 1:30 PM Saturday, it's brunch
+    //If it's between 8PM Saturday and 1:30 PM Sunday, it's brunch
+    if (
+      (day == 5 && (hour > 20 || (hour == 20 && minute >= 0))) ||
+      (day == 6 && (hour < 13 || (hour == 13 && minute <= 30)))
+    ) {
+      meal = "Brunch";
+    } else if (
+      (day == 6 && (hour > 20 || (hour == 20 && minute >= 0))) ||
+      (day == 0 && (hour < 13 || (hour == 13 && minute <= 30)))
+    ) {
+      meal = "Brunch";
+    }
+
+    //If it's between 1:30 PM and 8 PM on any other day, it's dinner
+    else if (hour >= 13 && hour < 20) {
+      meal = "Dinner";
+    }
+
+    //If meal is brunch but brunch has no data, set it to lunch
+    if (meal == "Brunch" && mealFoods["Brunch"].length == 0) {
+      meal = "Lunch";
+    }
+
+    $selectedMeal = meal;
   });
 </script>
 
+<div class="w-full flex flex-row self-center justify-center pt-4">
+  <div class="border-primary border-2 rounded-lg p-2 mx-4">
+    Try&nbsp;<a class="text-blue-500" href="/coursecorrect">/coursecorrect</a>&nbsp;for course planning & degree
+    checking
+  </div>
+</div>
 <main class="container mx-auto h-full p-4 flex flex-col items-center justify-center space-y-3">
   <Tabs.Root bind:value={$selectedMeal}>
     <Tabs.List>
@@ -209,69 +241,99 @@
     </Tabs.List>
   </Tabs.Root>
 
-  <div class="flex">
+  <div class="flex flex-wrap justify-center">
     {#each Object.keys($filters) as filter}
-      <div class="flex items-center mr-4">
+      <div class="flex items-center mr-4 mb-4 md:mr-0 md:mb-0">
         <div class="mr-2">
           <Switch bind:checked={$filters[filter]} onCheckedChange={refresh} />
         </div>
-        <div class="p-1">{var_to_label(filter)}</div>
+        <div class="mb-2 mr-3">{var_to_label(filter)}</div>
       </div>
     {/each}
   </div>
 
-  <div>
+  <div class="flex flex-col align-center justify-start">
     {#if mealFoods != {}}
-      <div class="text-3xl w-full flex flex-row justify-center">Specials</div>
-      <div class="flex flex-row flex-wrap justify-evenly">
+      <div class="text-3xl w-full flex flex-row justify-center mb-5">Specials</div>
+      <div class="flex flex-col md:flex-row md:flex-wrap items-center md:items-start justify-center">
         {#each dhalls as dhall}
-          <div class="flex flex-col items-center justify-start bg-card rounded-lg min-w-10 max-w-min">
-            <h3>{dhallToLetter[dhall]}</h3>
+          <div class="flex flex-col items-center justify-start bg-card rounded-lg w-80 md:w-32 mb-4 md:mr-4">
+            <h3 class="hidden md:inline">{dhallToLetter[dhall]}</h3>
+            <h3 class="md:hidden">{dhallToName[dhall]}</h3>
             {#each specials[$selectedMeal][dhall] as food}
-              <div class="flex items-center justify-between border-2 border-green-500 p-2 m-2 w-full rounded-lg">
+              <div class="flex items-center justify-between border-2 border-primary p-2 m-2 w-full rounded-lg">
                 <h3>{food.name}</h3>
+                <Popover.Root>
+                  <Popover.Trigger><Info size={24} class="p-1" /></Popover.Trigger>
+                  <Popover.Content side="top-start"
+                    >{food.ingredients ? "Ingredients: " + food.ingredients : "No ingredients listed"}
+                    {#each Object.keys($filters) as filter}
+                      {#if food[filter]}
+                        <div class="text-green-500">{var_to_label(filter)}</div>
+                      {/if}
+                    {/each}
+                  </Popover.Content>
+                </Popover.Root>
               </div>
             {/each}
           </div>
         {/each}
       </div>
+
       <Separator />
       <!-- partialSpecials table -->
-      <div class="text-3xl w-full flex flex-row justify-center mt-10">Partial Specials</div>
-      <Table.Root>
-        <Table.Header>
-          <Table.Row>
-            <Table.Head>Food</Table.Head>
-            {#each dhalls as dhall}
-              <Table.Head>{dhallToLetter[dhall]}</Table.Head>
-            {/each}
-          </Table.Row>
-        </Table.Header>
-        {#if mealFoods != {}}
-          <Table.Body>
+      <div class="text-3xl w-full flex flex-row justify-center mt-10 mb-5">Partial Specials</div>
+      <div class="w-full flex flex-col justify-start items-center">
+        <div class="grid grid-cols-9 w-fit">
+          {#if mealFoods != {}}
             {#each partialSpecials[$selectedMeal] ?? [] as foodDhallTuple}
-              <Table.Row>
-                <Table.Cell>{foodDhallTuple.food.name}</Table.Cell>
-                {#each foodDhallTuple.dhalls ?? [] as dhall}
-                  <!-- <Table.Cell>{dhall ? "X" : ""}</Table.Cell> -->
-                  <Table.Cell>
-                    {#if dhall}
-                      <div class="w-4 h-4 bg-green-500 rounded-sm"></div>
-                    {/if}
-                  </Table.Cell>
-                {/each}
-              </Table.Row>
+              <div class="flex flex-row justify-center items-center w-full col-span-9 my-1">
+                {foodDhallTuple.food.name}
+                <Popover.Root>
+                  <Popover.Trigger><Info size={24} class="p-1" /></Popover.Trigger>
+                  <Popover.Content side="top-start"
+                    >{foodDhallTuple.food.ingredients
+                      ? "Ingredients: " + foodDhallTuple.food.ingredients
+                      : "No ingredients listed"}
+                    {#each Object.keys($filters) as filter}
+                      {#if foodDhallTuple.food[filter]}
+                        <div class="text-primary">{var_to_label(filter)}</div>
+                      {/if}
+                    {/each}
+                  </Popover.Content>
+                </Popover.Root>
+              </div>
+              {#each foodDhallTuple.dhalls ?? [] as dhall, i}
+                {#if dhall}
+                  <div class="w-5 h-5 p-3 m-1 my-1 bg-primary rounded-sm flex items-center justify-center text-black">
+                    {dhallToLetter[dhalls[i]]}
+                  </div>
+                {:else}
+                  <div class="w-5 h-5 rounded-sm"></div>
+                {/if}
+              {/each}
             {/each}
-          </Table.Body>
-        {/if}
-      </Table.Root>
-      <Separator />
+          {/if}
+        </div>
+      </div>
+      <Separator class="mt-5" />
       <!-- Foods offered in all dhalls -->
-      <div class="text-3xl w-full flex flex-row justify-center mt-10">All dhalls</div>
+      <div class="text-3xl w-full flex flex-row justify-center mt-10 mb-5">Everywhere</div>
       <div class="flex flex-row flex-wrap justify-evenly">
         {#each allDhFoods[$selectedMeal] ?? [] as food}
-          <div class="flex items-center justify-between border-2 border-green-500 p-2 m-2 rounded-lg">
+          <div class="flex items-center justify-between border-2 border-primary p-2 m-2 rounded-lg">
             <h3>{food.name}</h3>
+            <Popover.Root>
+              <Popover.Trigger><Info size={24} class="p-1" /></Popover.Trigger>
+              <Popover.Content side="top-start"
+                >{food.ingredients ? "Ingredients: " + food.ingredients : "No ingredients listed"}
+                {#each Object.keys($filters) as filter}
+                  {#if food[filter]}
+                    <div class="text-green-500">{var_to_label(filter)}</div>
+                  {/if}
+                {/each}
+              </Popover.Content>
+            </Popover.Root>
           </div>
         {/each}
       </div>
