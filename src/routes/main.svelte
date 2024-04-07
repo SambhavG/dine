@@ -7,6 +7,8 @@
   import Separator from "$lib/components/ui/separator/separator.svelte";
   import { ToggleGroup } from "bits-ui";
 
+  import { base } from "$app/paths";
+
   import { selectedMeal, filters } from "../stores.js";
   import Switch from "$lib/components/ui/switch/switch.svelte";
   import * as Table from "$lib/components/ui/table";
@@ -228,8 +230,8 @@
 
 <div class="w-full flex flex-row self-center justify-center pt-4">
   <div class="border-primary border-2 rounded-lg p-2 mx-4">
-    Try&nbsp;<a class="text-blue-500" href="/coursecorrect">/coursecorrect</a>&nbsp;for course planning & degree
-    checking
+    Try&nbsp;<a class="text-blue-500" href="https://sambhavg.github.io/coursecorrect">/coursecorrect</a>&nbsp;for course
+    planning & degree checking
   </div>
 </div>
 <main class="container mx-auto h-full p-4 flex flex-col items-center justify-center space-y-3">
