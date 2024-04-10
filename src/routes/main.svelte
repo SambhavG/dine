@@ -228,10 +228,15 @@
   });
 </script>
 
-<div class="w-full flex flex-row self-center justify-center pt-4">
+<div class="w-full flex flex-row flex-wrap self-center justify-center pt-4">
   <div class="border-primary border-2 rounded-lg p-2 mx-4">
-    Try&nbsp;<a class="text-blue-500" href="https://sambhavg.github.io/coursecorrect">/coursecorrect</a>&nbsp;for course
-    planning & degree checking
+    <a class="text-blue-500" href="https://sambhavg.github.io/coursecorrect">/coursecorrect</a>&nbsp;course planning,
+    degree checking
+  </div>
+  <div class="border-primary border-2 rounded-lg p-2 mx-4 text-center mt-4 md:mt-0">
+    <a href="https://github.com/SambhavG/dine" class="text-yellow-300">Star</a> this project on Github if you found it
+    useful
+    <!-- Place this tag where you want the button to render. -->
   </div>
 </div>
 
@@ -326,6 +331,10 @@
                 {/each}
               {/if}
             </div>
+          </div>
+          <div>
+            <b>W</b>ilbur, <b>S</b>tern, <b>C</b>asper, <b>E</b>VGR, <b>A</b>rrillaga, <b>B</b>ranner, <b>F</b>lomo,
+            <b>L</b>akeside, <b>R</b>icker
           </div>
         </div>
 
