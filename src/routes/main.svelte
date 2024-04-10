@@ -256,41 +256,42 @@
     </div>
   {/each}
 </div>
-<main class="container mx-auto h-full p-4 flex flex-col items-center justify-center space-y-3">
+<main class="mx-auto h-full p-4 flex flex-col items-center justify-center space-y-3">
   <div class="flex flex-col align-center justify-start">
     {#if mealFoods != {}}
-      <div class="text-3xl w-full flex flex-row justify-center mb-5">Specials</div>
-      <div class="flex flex-col md:flex-row md:flex-wrap items-center md:items-start justify-center">
-        {#each dhalls as dhall}
-          <div class="flex flex-col items-center justify-start bg-card rounded-lg w-80 md:w-32 mb-4 md:mr-4">
-            <!-- <h3 class="hidden md:inline">{dhallToLetter[dhall]}</h3> -->
-            <h3>{dhallToName[dhall]}</h3>
-            {#each specials[$selectedMeal][dhall] as food}
-              <div class="flex items-center justify-between border-2 border-primary p-2 m-2 w-full rounded-lg">
-                <h3>{food.name}</h3>
-                <Popover.Root>
-                  <Popover.Trigger><Info size={24} class="p-1" /></Popover.Trigger>
-                  <Popover.Content side="top-start"
-                    >{food.ingredients ? "Ingredients: " + food.ingredients : "No ingredients listed"}
-                    {#each Object.keys($filters) as filter}
-                      {#if food[filter]}
-                        <div class="text-green-500">{var_to_label(filter)}</div>
-                      {/if}
-                    {/each}
-                  </Popover.Content>
-                </Popover.Root>
+      <div class="flex flex-col items-start md:grid md:grid-cols-3">
+        <div class="flex flex-col md:flex-row md:flex-wrap items-center md:items-start justify-center">
+          <div class="text-3xl w-full flex flex-row justify-center mb-5">Specials</div>
+          {#each dhalls as dhall}
+            {#if specials[$selectedMeal][dhall].length > 0}
+              <div class="flex flex-col items-center justify-start bg-card rounded-lg w-80 md:w-48 mb-4 md:mr-4">
+                <!-- <h3 class="hidden md:inline">{dhallToLetter[dhall]}</h3> -->
+                <h3><b>{dhallToName[dhall]}</b></h3>
+                {#each specials[$selectedMeal][dhall] as food}
+                  <div class="flex items-center justify-between border-2 border-primary p-2 m-2 w-full rounded-lg">
+                    <h3>{food.name}</h3>
+                    <Popover.Root>
+                      <Popover.Trigger><Info size={24} class="p-1" /></Popover.Trigger>
+                      <Popover.Content side="top-start"
+                        >{food.ingredients ? "Ingredients: " + food.ingredients : "No ingredients listed"}
+                        {#each Object.keys($filters) as filter}
+                          {#if food[filter]}
+                            <div class="text-green-500">{var_to_label(filter)}</div>
+                          {/if}
+                        {/each}
+                      </Popover.Content>
+                    </Popover.Root>
+                  </div>
+                {/each}
               </div>
-            {/each}
-          </div>
-        {/each}
-      </div>
+            {/if}
+          {/each}
+        </div>
 
-      <Separator />
-      <!-- partialSpecials table -->
-      <div class="flex flex-col items-start md:grid md:grid-cols-2">
+        <!-- partialSpecials table -->
         <!-- Partial Specials -->
-        <div class="w-full md:w-auto flex flex-col items-center">
-          <div class="text-3xl w-full flex justify-center mt-10 mb-5">Partial Specials</div>
+        <div class="flex flex-col md:flex-row md:flex-wrap items-center md:items-start justify-center">
+          <div class="text-3xl w-full flex justify-center mb-3 mt-10 md:mt-0">Partial Specials</div>
           <div class="w-full flex flex-col justify-start items-center">
             <div class="grid grid-cols-9 w-fit">
               {#if mealFoods != {}}
@@ -329,8 +330,8 @@
         </div>
 
         <!-- Everywhere -->
-        <div class="w-full flex flex-col items-center mt-5 md:mt-0">
-          <div class="text-3xl w-full flex justify-center mt-10 mb-5">Everywhere</div>
+        <div class="flex flex-col md:flex-row md:flex-wrap items-center md:items-start justify-center">
+          <div class="text-3xl w-full flex justify-center mb-3 mt-10 md:mt-0">Everywhere</div>
           <div class="flex flex-row flex-wrap justify-evenly w-80 md:w-fit">
             {#each allDhFoods[$selectedMeal] ?? [] as food}
               <div class="flex items-center justify-between border-2 border-primary p-2 m-2 rounded-lg w-full md:w-fit">
