@@ -262,9 +262,9 @@
   {/each}
 </div>
 <main class="mx-auto h-full p-4 flex flex-col items-center justify-center space-y-3">
-  <div class="flex flex-col align-center justify-start">
+  <div class="flex flex-col items-center justify-start">
     {#if mealFoods != {}}
-      <div class="flex flex-col items-start md:grid md:grid-cols-3">
+      <div class="flex flex-col items-center md:items-start md:grid md:grid-cols-3 md:grid-cols-[1.7fr_1fr_1fr] gap-5">
         <div class="flex flex-col md:flex-row md:flex-wrap items-center md:items-start justify-center">
           <div class="text-3xl w-full flex flex-row justify-center mb-5">Specials</div>
           {#each dhalls as dhall}
@@ -332,7 +332,7 @@
               {/if}
             </div>
           </div>
-          <div>
+          <div class="text-center mt-3">
             <b>W</b>ilbur, <b>S</b>tern, <b>C</b>asper, <b>E</b>VGR, <b>A</b>rrillaga, <b>B</b>ranner, <b>F</b>lomo,
             <b>L</b>akeside, <b>R</b>icker
           </div>
