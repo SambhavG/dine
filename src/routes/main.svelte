@@ -230,12 +230,11 @@
 
 <div class="w-full flex flex-row flex-wrap self-center justify-center pt-4">
   <div class="border-primary border-2 rounded-lg p-2 mx-4">
-    <a class="text-blue-500" href="https://sambhavg.github.io/coursecorrect">/coursecorrect</a>&nbsp;course planning,
-    degree checking
+    Try <a class="text-blue-500" href="https://sambhavg.github.io/coursecorrect">/coursecorrect</a>&nbsp;for course
+    planning & degree checking
   </div>
   <div class="border-primary border-2 rounded-lg p-2 mx-4 text-center mt-4 md:mt-0">
-    <a href="https://github.com/SambhavG/dine" class="text-yellow-300">Star</a> this project on Github if you found it
-    useful
+    <a href="https://github.com/SambhavG/dine" class="text-yellow-300">Star</a> on Github if you found it useful
     <!-- Place this tag where you want the button to render. -->
   </div>
 </div>
