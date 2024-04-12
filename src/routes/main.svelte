@@ -44,7 +44,7 @@
   };
 
   async function getData() {
-    const response = await fetch("https://general-backend-db.onrender.com/polls");
+    const response = await fetch("https://general-backend-db.onrender.com/polls/");
     let result = await response.text();
     data = JSON.parse(result);
     refresh();
