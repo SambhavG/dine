@@ -1,0 +1,6 @@
+This favicon was generated using the following font:
+
+- Font Title: Anybody
+- Font Author: Copyright 2020 The Anybody Project Authors (https://github.com/Etcetera-Type-Co/Anybody)
+- Font Source: https://fonts.gstatic.com/s/anybody/v11/VuJbdNvK2Ib2ppdWYq311GH32hxIv0sd5grncSUi2F_Wim4J12DPrsXD_nBPpQ.ttf
+- Font License: SIL Open Font License, 1.1 (http://scripts.sil.org/OFL))
