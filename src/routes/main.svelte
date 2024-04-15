@@ -191,6 +191,7 @@
   }
 
   onMount(() => {
+    fetch("https://api.counterapi.dev/v1/sambhavg.github.io/dine/up");
     getData();
 
     //Set the current meal to the meal that will occur next based on the current time
