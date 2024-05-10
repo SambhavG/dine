@@ -48,6 +48,7 @@
     let result = await response.text();
     data = JSON.parse(result);
     refresh();
+    console.log(data);
   }
 
   function meetsFilters(food) {
