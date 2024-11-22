@@ -43,6 +43,8 @@
     Ricker: "Ricker",
   };
 
+  let highlightedDhall: string | null = null;
+
   async function getData() {
     const response = await fetch("https://general-backend-db.onrender.com/polls/");
     let result = await response.text();
@@ -270,11 +272,17 @@
           <div class="text-3xl w-full flex flex-row justify-center mb-5">Specials</div>
           {#each dhalls as dhall}
             {#if specials[$selectedMeal][dhall].length > 0}
-              <div class="flex flex-col items-center justify-start bg-card rounded-lg w-80 md:w-48 mb-4 md:mr-4">
-                <!-- <h3 class="hidden md:inline">{dhallToLetter[dhall]}</h3> -->
+              <div
+                class="flex flex-col items-center justify-start bg-card rounded-lg w-80 md:w-48 mb-4 md:mr-4"
+                on:mouseenter={() => (highlightedDhall = dhall)}
+                on:mouseleave={() => (highlightedDhall = null)}
+              >
                 <h3><b>{dhallToName[dhall]}</b></h3>
                 {#each specials[$selectedMeal][dhall] as food}
-                  <div class="flex items-center justify-between border-2 border-primary p-2 m-2 w-full rounded-lg">
+                  <div
+                    class="flex items-center justify-between border-2 border-primary p-2 m-2 w-full rounded-lg"
+                    class:bg-secondary={highlightedDhall === dhall}
+                  >
                     <h3>{food.name}</h3>
                     <Popover.Root>
                       <Popover.Trigger><Info size={24} class="p-1" /></Popover.Trigger>
@@ -302,17 +310,22 @@
             <div class="grid grid-cols-9 w-fit">
               {#if mealFoods != {}}
                 {#each partialSpecials[$selectedMeal] ?? [] as foodDhallTuple}
-                  <div class="flex flex-row justify-center items-center w-full col-span-9 my-1">
+                  <div
+                    class="flex flex-row justify-center items-center w-full col-span-9 my-1 rounded-lg {foodDhallTuple
+                      .dhalls[dhalls.indexOf(highlightedDhall)]
+                      ? 'border-2 border-primary'
+                      : ''}"
+                  >
                     {foodDhallTuple.food.name}
                     <Popover.Root>
                       <Popover.Trigger><Info size={24} class="p-1" /></Popover.Trigger>
-                      <Popover.Content side="top-start"
-                        >{foodDhallTuple.food.ingredients
+                      <Popover.Content side="top-start">
+                        {foodDhallTuple.food.ingredients
                           ? "Ingredients: " + foodDhallTuple.food.ingredients
                           : "No ingredients listed"}
                         {#each Object.keys($filters) as filter}
                           {#if foodDhallTuple.food[filter]}
-                            <div class="text-primary">{var_to_label(filter)}</div>
+                            <div class="text-green-500">{var_to_label(filter)}</div>
                           {/if}
                         {/each}
                       </Popover.Content>
@@ -321,7 +334,11 @@
                   {#each foodDhallTuple.dhalls ?? [] as dhall, i}
                     {#if dhall}
                       <div
-                        class="w-5 h-5 p-3 m-1 my-1 bg-primary rounded-sm flex items-center justify-center text-black"
+                        class="w-5 h-5 p-3 m-1 my-1 rounded-sm flex items-center justify-center text-black"
+                        class:bg-primary={!highlightedDhall || highlightedDhall === dhalls[i]}
+                        class:bg-secondary={highlightedDhall && highlightedDhall !== dhalls[i]}
+                        on:mouseenter={() => (highlightedDhall = dhalls[i])}
+                        on:mouseleave={() => (highlightedDhall = null)}
                       >
                         {dhallToLetter[dhalls[i]]}
                       </div>
@@ -344,7 +361,10 @@
           <div class="text-3xl w-full flex justify-center mb-3 mt-10 md:mt-0">Everywhere</div>
           <div class="flex flex-row flex-wrap justify-evenly w-80 md:w-fit">
             {#each allDhFoods[$selectedMeal] ?? [] as food}
-              <div class="flex items-center justify-between border-2 border-primary p-2 m-2 rounded-lg w-full md:w-fit">
+              <div
+                class="flex items-center justify-between border-2 border-primary p-2 m-2 rounded-lg w-full md:w-fit"
+                class:bg-secondary={highlightedDhall}
+              >
                 <h3>{food.name}</h3>
                 <Popover.Root>
                   <Popover.Trigger><Info size={24} class="p-1" /></Popover.Trigger>
