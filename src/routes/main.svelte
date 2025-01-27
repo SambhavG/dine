@@ -268,6 +268,13 @@
 
     $selectedMeal = meal;
   });
+
+  function convertDate(date: string) {
+    // Convert the string YYY-MM-DD to the string "Tues 3rd"
+    let day = new Date(date).toLocaleDateString("en-US", { weekday: "long" });
+    let dayNumber = new Date(date).getDate();
+    return `${day} ${dayNumber}${dayNumber % 10 == 1 ? "st" : dayNumber % 10 == 2 ? "nd" : dayNumber % 10 == 3 ? "rd" : "th"}`;
+  }
 </script>
 
 <div class="w-full flex flex-row flex-wrap self-center justify-center pt-4">
@@ -287,7 +294,7 @@
 >
   <Tabs.List>
     {#each dayOptions as dayOption}
-      <Tabs.Trigger value={dayOption}>{dayOption}</Tabs.Trigger>
+      <Tabs.Trigger value={dayOption}>{convertDate(dayOption)}</Tabs.Trigger>
     {/each}
   </Tabs.List>
 </Tabs.Root>
