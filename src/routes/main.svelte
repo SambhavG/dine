@@ -9,15 +9,24 @@
 
   import { base } from "$app/paths";
 
-  import { selectedMeal, filters } from "../stores.js";
+  import { selectedMeal, filters, selectedDayOption } from "../stores.ts";
   import Switch from "$lib/components/ui/switch/switch.svelte";
   import * as Table from "$lib/components/ui/table";
-  import { Info } from "lucide-svelte";
+  import { CornerDownLeft, Info } from "lucide-svelte";
 
-  //Query https://general-backend-db.onrender.com/polls
-  let data = {};
-  let dhalls = [];
-  let meals = [];
+  // Add proper typing for the data structures
+  interface DayData {
+    meta: {
+      date: string;
+    };
+    [key: string]: any; // For other properties
+  }
+
+  let allData: DayData[] = [];
+  let data: DayData | Record<string, any> = {};
+  let dhalls: string[] = [];
+  let meals: string[] = [];
+  let dayOptions: string[] = [];
 
   let dhallToLetter = {
     Wilbur: "W",
@@ -46,11 +55,39 @@
   let highlightedDhall: string | null = null;
 
   async function getData() {
-    const response = await fetch("https://general-backend-db.onrender.com/polls/");
-    let result = await response.text();
-    data = JSON.parse(result);
-    refresh();
-    console.log(data);
+    try {
+      const response = await fetch("https://general-backend-db.onrender.com/polls/seven_days");
+      const result = await response.text();
+      allData = JSON.parse(result);
+
+      // Clear existing dayOptions
+      dayOptions = [];
+
+      // Make sure we have data before processing
+      if (allData && Array.isArray(allData)) {
+        // Create new array of dates
+        dayOptions = allData.filter((day) => day?.meta?.date).map((day) => day.meta.date);
+
+        if (dayOptions.length > 0) {
+          $selectedDayOption = dayOptions[0];
+          data = allData[0];
+          refresh();
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  // Replace the existing data change block with this reactive statement
+  $: {
+    if ($selectedDayOption && allData.length > 0) {
+      const index = dayOptions.indexOf($selectedDayOption);
+      if (index !== -1) {
+        data = allData[index];
+        refresh();
+      }
+    }
   }
 
   function meetsFilters(food) {
@@ -62,6 +99,7 @@
   let mealFoods = {};
 
   function processData(foodData) {
+    console.log(foodData);
     dhalls = Object.keys(foodData);
     dhalls = dhalls.filter((dhall) => dhall !== "meta");
     meals = Object.keys(foodData[dhalls[0]]);
@@ -244,8 +282,19 @@
 </div>
 
 <Tabs.Root
+  bind:value={$selectedDayOption}
+  class="container mx-auto h-full pt-2 flex flex-col items-center justify-center"
+>
+  <Tabs.List>
+    {#each dayOptions as dayOption}
+      <Tabs.Trigger value={dayOption}>{dayOption}</Tabs.Trigger>
+    {/each}
+  </Tabs.List>
+</Tabs.Root>
+
+<Tabs.Root
   bind:value={$selectedMeal}
-  class="container mx-auto h-full p-4 flex flex-col items-center justify-center space-y-3"
+  class="container mx-auto h-full p-4 pt-2 flex flex-col items-center justify-center space-y-3"
 >
   <Tabs.List>
     {#each meals as meal}
