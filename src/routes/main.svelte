@@ -98,7 +98,6 @@
   let mealFoods = {};
 
   function processData(foodData) {
-    console.log(foodData);
     dhalls = Object.keys(foodData);
     dhalls = dhalls.filter((dhall) => dhall !== "meta");
     meals = Object.keys(foodData[dhalls[0]]);
@@ -293,10 +292,6 @@
     };
 
     return `${day} ${dayNumber}${getOrdinal(dayNumber)}`;
-  }
-
-  $: {
-    console.log(dayOptions);
   }
 </script>
 
