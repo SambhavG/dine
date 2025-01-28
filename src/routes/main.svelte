@@ -67,7 +67,6 @@
       if (allData && Array.isArray(allData)) {
         // Create new array of dates
         dayOptions = allData.filter((day) => day?.meta?.date).map((day) => day.meta.date);
-
         if (dayOptions.length > 0) {
           $selectedDayOption = dayOptions[0];
           data = allData[0];
@@ -270,10 +269,34 @@
   });
 
   function convertDate(date: string) {
-    // Convert the string YYY-MM-DD to the string "Tues 3rd"
-    let day = new Date(date).toLocaleDateString("en-US", { weekday: "long" });
-    let dayNumber = new Date(date).getDate();
-    return `${day} ${dayNumber}${dayNumber % 10 == 1 ? "st" : dayNumber % 10 == 2 ? "nd" : dayNumber % 10 == 3 ? "rd" : "th"}`;
+    // Create date at noon Pacific time to avoid any timezone edge cases
+    let pacificDate = new Date(date + "T12:00:00-07:00");
+    let day = pacificDate.toLocaleDateString("en-US", {
+      weekday: "short",
+      timeZone: "America/Los_Angeles",
+    });
+    let dayNumber = pacificDate.getDate();
+
+    // Get ordinal suffix
+    const getOrdinal = (n: number) => {
+      if (n > 3 && n < 21) return "th";
+      switch (n % 10) {
+        case 1:
+          return "st";
+        case 2:
+          return "nd";
+        case 3:
+          return "rd";
+        default:
+          return "th";
+      }
+    };
+
+    return `${day} ${dayNumber}${getOrdinal(dayNumber)}`;
+  }
+
+  $: {
+    console.log(dayOptions);
   }
 </script>
 
