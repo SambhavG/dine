@@ -1,18 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import * as Tabs from "$lib/components/ui/tabs";
-  import * as Tooltip from "$lib/components/ui/tooltip";
   import * as Popover from "$lib/components/ui/popover";
-  import { Checkbox } from "$lib/components/ui/checkbox";
-  import Separator from "$lib/components/ui/separator/separator.svelte";
-  import { ToggleGroup } from "bits-ui";
-
-  import { base } from "$app/paths";
 
   import { selectedMeal, filters, selectedDayOption } from "../stores.ts";
   import Switch from "$lib/components/ui/switch/switch.svelte";
-  import * as Table from "$lib/components/ui/table";
-  import { CornerDownLeft, Info } from "lucide-svelte";
+  import { Info } from "lucide-svelte";
 
   // Add proper typing for the data structures
   interface DayData {
@@ -168,7 +161,7 @@
 
   //Foods with more than 1 but less than 9 dhalls
   //Map from meal to array of tuples of food, array of dhalls offering it
-  //Array is sorted by earliest dhall
+  //Array is sorted by number of dhalls, then by earliest dhall, then alphabetically
   let partialSpecials = {};
   function processPartialSpecials() {
     Object.keys(mealFoods).forEach((meal) => {
@@ -188,15 +181,23 @@
         }
       });
 
-      //Sort by dhallArray lexographically
-      //An earlier 1 goes above a later 1
       partialSpecials[meal].sort((a, b) => {
+        // First sort by number of dining halls (fewer first)
+        const aCount = a.dhalls.reduce((sum, val) => sum + val, 0);
+        const bCount = b.dhalls.reduce((sum, val) => sum + val, 0);
+        if (aCount !== bCount) {
+          return aCount - bCount;
+        }
+
+        // Then sort by earliest dining hall
         for (let i = 0; i < dhalls.length; i++) {
-          if (a.dhalls[i] - b.dhalls[i] != 0) {
-            return a.dhalls[i] - b.dhalls[i];
+          if (a.dhalls[i] !== b.dhalls[i]) {
+            return b.dhalls[i] - a.dhalls[i]; // Reverse to prioritize 1s earlier
           }
         }
-        return 0;
+
+        // Finally sort alphabetically
+        return a.food.name.localeCompare(b.food.name);
       });
     });
   }
