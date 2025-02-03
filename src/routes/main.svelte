@@ -376,7 +376,6 @@
           {/each}
         </div>
 
-        <!-- partialSpecials table -->
         <!-- Partial Specials -->
         <div class="flex flex-col md:flex-row md:flex-wrap items-center md:items-start justify-center">
           <div class="text-3xl w-full flex justify-center mb-3 mt-10 md:mt-0">Partial Specials</div>
@@ -387,7 +386,7 @@
                   <div
                     class="flex flex-row justify-center items-center w-full col-span-9 my-1 rounded-lg {foodDhallTuple
                       .dhalls[dhalls.indexOf(highlightedDhall)]
-                      ? 'border-2 border-primary'
+                      ? 'outline outline-2 outline-primary'
                       : ''}"
                   >
                     {foodDhallTuple.food.name}
