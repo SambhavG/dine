@@ -5,7 +5,7 @@
 
   import { selectedMeal, filters, selectedDayOption } from "../stores.ts";
   import Switch from "$lib/components/ui/switch/switch.svelte";
-  import { Info } from "lucide-svelte";
+  import { Info, Loader2, AlertCircle } from "lucide-svelte";
 
   // Add proper typing for the data structures
   interface DayData {
@@ -20,6 +20,11 @@
   let dhalls: string[] = [];
   let meals: string[] = [];
   let dayOptions: string[] = [];
+
+  // Loading and error states
+  let isLoading = false;
+  let hasError = false;
+  let errorMessage = "";
 
   let dhallToLetter = {
     Wilbur: "W",
@@ -48,8 +53,18 @@
   let highlightedDhall: string | null = null;
 
   async function getData() {
+    isLoading = true;
+    hasError = false;
+    errorMessage = "";
+
     try {
+      //Sleep for 10 seconds
       const response = await fetch("https://sambhavg-modal-workspace--dining-backend-serve.modal.run/seven_days");
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const result = await response.text();
       allData = JSON.parse(result);
 
@@ -65,9 +80,16 @@
           data = allData[0];
           refresh();
         }
+      } else {
+        throw new Error("Invalid data format received");
       }
+
+      isLoading = false;
     } catch (error) {
       console.error("Error fetching data:", error);
+      isLoading = false;
+      hasError = true;
+      errorMessage = error instanceof Error ? error.message : "Failed to fetch dining data";
     }
   }
 
@@ -340,7 +362,17 @@
 </div>
 <main class="mx-auto h-full p-4 flex flex-col items-center justify-center space-y-3">
   <div class="flex flex-col items-center justify-start">
-    {#if mealFoods != {}}
+    {#if isLoading}
+      <div class="flex items-center justify-center h-64">
+        <Loader2 class="animate-spin" size={48} />
+      </div>
+    {:else if hasError}
+      <div class="flex flex-col items-center justify-center h-64 text-red-500">
+        <AlertCircle size={48} />
+        <p class="mt-4">Error: {errorMessage}</p>
+        <button on:click={getData} class="mt-4 px-4 py-2 bg-blue-500 text-white rounded"> Retry </button>
+      </div>
+    {:else if mealFoods != {}}
       <div class="flex flex-col items-center md:items-start md:grid md:grid-cols-3 md:grid-cols-[2fr_1fr_2fr] gap-5">
         <div class="flex flex-col md:flex-row md:flex-wrap items-center md:items-start justify-center">
           <div class="text-3xl w-full flex flex-row justify-center mb-5">Specials</div>
@@ -456,7 +488,7 @@
         </div>
       </div>
     {:else}
-      <p>Loading...</p>
+      <p>No data available.</p>
     {/if}
   </div>
 </main>
