@@ -49,7 +49,7 @@
 
   async function getData() {
     try {
-      const response = await fetch("https://general-backend-db.onrender.com/polls/seven_days");
+      const response = await fetch("https://sambhavg-modal-workspace--dining-backend-serve.modal.run/seven_days");
       const result = await response.text();
       allData = JSON.parse(result);
 
