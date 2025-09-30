@@ -59,7 +59,9 @@
 
     try {
       //Sleep for 10 seconds
-      const response = await fetch("https://sambhavg-modal-workspace--dining-backend-serve.modal.run/seven_days");
+      let link = "https://general-backend-db.onrender.com/polls/seven_days";
+      // link = "https://sambhavg-modal-workspace--dining-backend-serve.modal.run/seven_days";
+      const response = await fetch(link);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
