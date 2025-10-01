@@ -93,6 +93,8 @@
       hasError = true;
       errorMessage = error instanceof Error ? error.message : "Failed to fetch dining data";
     }
+
+    fetch("https://sambhavg-modal-workspace--dining-backend-serve.modal.run/ping");
   }
 
   // Replace the existing data change block with this reactive statement
